@@ -2,6 +2,9 @@
 /dist
 /node_modules
 /build
+/medisalud-backend/node_modules/
+/medisalud-backend/dist/
+/medisalud-backend/build/
 
 # Logs
 logs

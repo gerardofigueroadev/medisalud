@@ -1,0 +1,6 @@
+### GET HELLO WORLD
+GET http://localhost:3000 HTTP/1.1
+
+### Plans
+
+GET http://localhost:3000/plans/1  HTTP/1.1
