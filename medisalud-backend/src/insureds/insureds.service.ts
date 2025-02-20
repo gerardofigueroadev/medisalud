@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateInsuredDto } from './dto/create-insured.dto';
-import { Person } from './entities/person.entity';
-import { Plan } from './entities/plan.entity';
-import { Insured } from './entities/insured.entity';
+import { CreateInsuredDto } from './create_insured.dto';
+import { Person } from './persons.model';
+import { Plans } from 'src/plans/plans.model';
+import { Insured } from './insureds.model';
 
 @Injectable()
 export class InsuredsService {
@@ -12,8 +12,8 @@ export class InsuredsService {
     @InjectRepository(Person)
     private readonly personRepository: Repository<Person>,
     
-    @InjectRepository(Plan)
-    private readonly planRepository: Repository<Plan>,
+    @InjectRepository(Plans)
+    private readonly planRepository: Repository<Plans>,
     
     @InjectRepository(Insured)
     private readonly insuredRepository: Repository<Insured>,
@@ -63,4 +63,10 @@ export class InsuredsService {
 
     return await this.insuredRepository.save(insured);
   }
+
+  async findAll(): Promise<Insured[]> {
+    return await this.insuredRepository.find({
+      relations: ['person', 'plan'], // Incluye relaciones
+    });
+  }  
 }

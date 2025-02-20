@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Person } from './persons.model';
 import { Plans } from 'src/plans/plans.model';
 
@@ -8,9 +8,11 @@ export class Insured {
   id: number;
 
   @ManyToOne(() => Person, person => person.insureds, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'person_id' }) // 🔹 Define explícitamente el nombre de la columna
   person: Person;
 
   @ManyToOne(() => Plans, plans => plans.insureds, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'plan_id' }) // 🔹 Define explícitamente el nombre de la columna
   plan: Plans;
 
   @Column({ unique: true })
