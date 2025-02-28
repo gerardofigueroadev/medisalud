@@ -1,27 +1,19 @@
-### GET HELLO WORLD
-GET http://localhost:3000 HTTP/1.1
-
-### Plans
-
-GET http://localhost:3000/plans/1  HTTP/1.1
-
-### Crear un insured (POST)
-POST http://localhost:3000/insureds
+// request.http
+### Crear una persona y asignarla como alumno
+POST http://localhost:3000/personas/crear-alumno
 Content-Type: application/json
 
 {
-  "identity_number": "123456789",
-  "first_name": "Juan",
-  "last_name": "Pérez",
-  "birth_date": "1990-05-15",
-  "phone": "78965412",
-  "address": "Calle Falsa 123, Ciudad",
-  "plan_id": 2,
-  "email": "juan.perezas@email.com",
-  "status": "active",
-  "start_date": "2025-02-18",
-  "end_date": "2026-02-18"
+  "nombre": "Juaniyoa",
+  "apellido": "Pereza",
+  "tipo_documento": "CI",
+  "nro_documento": "123452",
+  "telefono": "123456789",
+  "email": "juan.perez1@example.com",
+  "direccion": "Calle Faalsa 123",
+  "codigo_alumno": "A004",
+  "observaciones": "Estudiante flojo"
 }
 
-### Obtener todos los insureds (GET)
-GET http://localhost:3000/insureds
+### Obtener lista de alumnos
+GET http://localhost:3000/personas/alumnos

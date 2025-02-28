@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
 import { InsuredsModule } from './insureds/insureds.module';
+import { PersonaModule } from './alumnos/persona.module';
 
 @Module({
   imports: [
@@ -15,12 +16,13 @@ import { InsuredsModule } from './insureds/insureds.module';
       port: 5432,
       username: 'postgres',
       password: '12345678',
-      database: 'medisalud',
+      database: 'idiomas',
       autoLoadEntities: true,
       synchronize: false,
     }),
     PlansModule,
-    InsuredsModule
+    InsuredsModule,
+    PersonaModule
   ],
   controllers: [AppController],
   providers: [AppService],
