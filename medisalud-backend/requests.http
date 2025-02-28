@@ -17,3 +17,19 @@ Content-Type: application/json
 
 ### Obtener lista de alumnos
 GET http://localhost:3000/personas/alumnos
+
+### Obtener lista de módulos con referencias internas
+GET http://localhost:3000/modulos
+Accept: application/json
+
+### Inscribir a un alumno en un módulo
+POST http://localhost:3000/inscripciones
+Content-Type: application/json
+
+{
+    "id_alumno": 4,
+    "id_modulo": 1
+}
+
+### Obtener lista de alumnos inscritos en un módulo
+GET http://localhost:3000/inscripciones/modulo/1

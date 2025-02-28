@@ -1,5 +1,5 @@
 // alumno.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Persona } from './persona.entity';
 
 @Entity('alumnos')
@@ -7,8 +7,8 @@ export class Alumno {
   @PrimaryGeneratedColumn()
   id_alumno: number;
 
-  @OneToOne(() => Persona)
-  @JoinColumn({ name: 'id_persona' })
+  @ManyToOne(() => Persona, { eager: true }) // Cargar automáticamente la relación
+  @JoinColumn({ name: 'id_persona' }) // Especificar la columna de unión
   persona: Persona;
 
   @Column()
