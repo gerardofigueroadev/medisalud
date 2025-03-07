@@ -1,35 +1,73 @@
 // request.http
-### Crear una persona y asignarla como alumno
-POST http://localhost:3000/personas/crear-alumno
-Content-Type: application/json
 
-{
-  "nombre": "Juaniyoa",
-  "apellido": "Pereza",
-  "tipo_documento": "CI",
-  "nro_documento": "123452",
-  "telefono": "123456789",
-  "email": "juan.perez1@example.com",
-  "direccion": "Calle Faalsa 123",
-  "codigo_alumno": "A004",
-  "observaciones": "Estudiante flojo"
-}
-
-### Obtener lista de alumnos
-GET http://localhost:3000/personas/alumnos
-
-### Obtener lista de módulos con referencias internas
-GET http://localhost:3000/modulos
+### Obtener lista de compras
+GET http://localhost:3000/compras
 Accept: application/json
 
-### Inscribir a un alumno en un módulo
-POST http://localhost:3000/inscripciones
+### Obtener lista de medidores
+GET http://localhost:3000/medidores
+Accept: application/json
+
+### Obtener lista de importaciones
+GET http://localhost:3000/importaciones
+
+### Obtener lista de clientes
+GET http://localhost:3000/clientes
+
+
+### Crear importacion
+POST http://localhost:3000/importaciones
 Content-Type: application/json
 
 {
-    "id_alumno": 4,
-    "id_modulo": 1
+  "nro_importacion": "IMP-2025-005",
+  "fecha_importacion": "2025-03-17",
+  "proveedor": "Proveedor X",
+  "costo_total": 5000.00,
+  "estado": "Pendiente",
+  "detalles": [
+    {
+      "id_tipo_medidor": 1,
+      "cantidad": 5,
+      "precio_unitario": 100.00,
+      "subtotal": 500.00
+    }
+  ]
 }
 
-### Obtener lista de alumnos inscritos en un módulo
-GET http://localhost:3000/inscripciones/modulo/1
+### Crear facturas
+POST http://localhost:3000/facturas
+Content-Type: application/json
+
+{
+  "id_compra": 1,
+  "nro_factura": "F001-0003",
+  "fecha_emision": "2025-03-18",
+  "monto_total": 250.00,
+  "estado": "Emitida"
+}
+
+### Crear compra
+POST http://localhost:3000/compras
+Content-Type: application/json
+
+{
+  "id_cliente": 1,
+  "fecha_compra": "2025-03-18",
+  "total": 500.00,
+  "estado": "Pagado",
+  "detalles": [
+    {
+      "id_medidor": 1,
+      "cantidad": 2,
+      "precio_unitario": 150.00,
+      "subtotal": 300.00
+    },
+    {
+      "id_medidor": 2,
+      "cantidad": 1,
+      "precio_unitario": 200.00,
+      "subtotal": 200.00
+    }
+  ]
+}

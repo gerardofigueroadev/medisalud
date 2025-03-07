@@ -1,172 +1,179 @@
-CREATE TABLE idiomas (
-    id_idioma SERIAL PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
-    descripcion TEXT,
-    activo BOOLEAN
+CREATE TABLE cliente (
+    id_cliente SERIAL PRIMARY KEY,
+    nombre VARCHAR(255),
+    apellido VARCHAR(255),
+    direccion VARCHAR(255),
+    telefono VARCHAR(50),
+    email VARCHAR(255),
+    nit VARCHAR(50)
 );
 
-CREATE TABLE niveles (
-    id_nivel SERIAL PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
-    descripcion TEXT,
-    activo BOOLEAN
+CREATE TABLE compra (
+    id_compra SERIAL PRIMARY KEY,
+    id_cliente INT REFERENCES cliente(id_cliente),
+    fecha_compra DATE,
+    total DECIMAL(10,2),
+    estado VARCHAR(50)
 );
 
-CREATE TABLE cursos (
-    id_curso SERIAL PRIMARY KEY,
-    id_idioma INT NOT NULL REFERENCES idiomas(id_idioma),
-    id_nivel INT NOT NULL REFERENCES niveles(id_nivel),
-    codigo VARCHAR(10) NOT NULL UNIQUE,
-    nombre VARCHAR(100) NOT NULL,
-    capacidad_minima INT,
-    activo BOOLEAN
+CREATE TABLE factura (
+    id_factura SERIAL PRIMARY KEY,
+    id_compra INT UNIQUE REFERENCES compra(id_compra),
+    nro_factura VARCHAR(50),
+    fecha_emision DATE,
+    monto_total DECIMAL(10,2),
+    estado VARCHAR(50)
 );
 
-CREATE TABLE periodos (
-    id_periodo SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    fecha_inicio DATE NOT NULL,
-    fecha_fin DATE NOT NULL,
-    estado VARCHAR(20)
+CREATE TABLE tipo_medidor (
+    id_tipo_medidor SERIAL PRIMARY KEY,
+    nombre VARCHAR(50),
+    descripcion VARCHAR(255)
 );
 
-CREATE TABLE personas (
-    id_persona SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    apellido VARCHAR(100) NOT NULL,
-    tipo_documento VARCHAR(20),
-    nro_documento VARCHAR(30) NOT NULL,
-    telefono VARCHAR(20),
-    email VARCHAR(100),
-    direccion TEXT,
-    fecha_registro TIMESTAMP,
-    activo BOOLEAN,
-    UNIQUE (tipo_documento, nro_documento)
+CREATE TABLE medidor (
+    id_medidor SERIAL PRIMARY KEY,
+    id_tipo_medidor INT REFERENCES tipo_medidor(id_tipo_medidor),
+    numero_serie VARCHAR(50),
+    marca VARCHAR(50),
+    modelo VARCHAR(50),
+    estado VARCHAR(50),
+    sistema_seguridad BOOLEAN,
+    fecha_fabricacion DATE,
+    fecha_calibracion DATE,
+    valores_calibracion VARCHAR(255)
 );
 
-CREATE TABLE alumnos (
-    id_alumno SERIAL PRIMARY KEY,
-    id_persona INT NOT NULL REFERENCES personas(id_persona),
-    codigo_alumno VARCHAR(20) NOT NULL UNIQUE,
-    observaciones TEXT
+CREATE TABLE detalle_compra (
+    id_detalle_compra SERIAL PRIMARY KEY,
+    id_compra INT REFERENCES compra(id_compra),
+    id_medidor INT REFERENCES medidor(id_medidor),
+    cantidad INT,
+    precio_unitario DECIMAL(10,2),
+    subtotal DECIMAL(10,2)
 );
 
-CREATE TABLE profesores (
-    id_profesor SERIAL PRIMARY KEY,
-    id_persona INT NOT NULL REFERENCES personas(id_persona),
-    especialidad VARCHAR(100),
-    fecha_contratacion DATE
+CREATE TABLE precio (
+    id_precio SERIAL PRIMARY KEY,
+    id_tipo_medidor INT REFERENCES tipo_medidor(id_tipo_medidor),
+    sistema_seguridad BOOLEAN,
+    valor_usd DECIMAL(10,2),
+    fecha_vigencia DATE,
+    estado VARCHAR(50)
 );
 
-CREATE TABLE aulas (
-    id_aula SERIAL PRIMARY KEY,
-    numero VARCHAR(10) NOT NULL UNIQUE,
-    capacidad INT,
-    disponible BOOLEAN
+CREATE TABLE servicio (
+    id_servicio SERIAL PRIMARY KEY,
+    nombre VARCHAR(50),
+    descripcion VARCHAR(255),
+    precio_usd DECIMAL(10,2),
+    estado VARCHAR(50)
 );
 
-CREATE TABLE horarios (
-    id_horario SERIAL PRIMARY KEY,
-    dia_semana VARCHAR(20) NOT NULL,
-    hora_inicio TIME NOT NULL,
-    hora_fin TIME NOT NULL
+CREATE TABLE detalle_servicio (
+    id_detalle_servicio SERIAL PRIMARY KEY,
+    id_servicio INT REFERENCES servicio(id_servicio),
+    id_compra INT REFERENCES compra(id_compra),
+    id_medidor INT REFERENCES medidor(id_medidor),
+    precio DECIMAL(10,2),
+    observaciones VARCHAR(255)
 );
 
-CREATE TABLE modulos (
-    id_modulo SERIAL PRIMARY KEY,
-    id_curso INT NOT NULL REFERENCES cursos(id_curso),
-    id_periodo INT NOT NULL REFERENCES periodos(id_periodo),
-    id_profesor INT NOT NULL REFERENCES profesores(id_profesor),
-    id_aula INT REFERENCES aulas(id_aula),
-    codigo_modulo VARCHAR(20) NOT NULL UNIQUE,
-    fecha_inicio DATE NOT NULL,
-    fecha_fin DATE NOT NULL,
-    capacidad_maxima INT,
-    estado VARCHAR(20)
+CREATE TABLE importacion (
+    id_importacion SERIAL PRIMARY KEY,
+    nro_importacion VARCHAR(50),
+    fecha_importacion DATE,
+    proveedor VARCHAR(255),
+    costo_total DECIMAL(10,2),
+    estado VARCHAR(50)
 );
 
-CREATE TABLE modulo_horario (
-    id_modulo_horario SERIAL PRIMARY KEY,
-    id_modulo INT NOT NULL REFERENCES modulos(id_modulo),
-    id_horario INT NOT NULL REFERENCES horarios(id_horario),
-    UNIQUE (id_modulo, id_horario)
+CREATE TABLE detalle_importacion (
+    id_detalle_importacion SERIAL PRIMARY KEY,
+    id_importacion INT REFERENCES importacion(id_importacion),
+    id_tipo_medidor INT REFERENCES tipo_medidor(id_tipo_medidor),
+    cantidad INT,
+    precio_unitario DECIMAL(10,2),
+    subtotal DECIMAL(10,2)
 );
 
-CREATE TABLE inscripciones (
-    id_inscripcion SERIAL PRIMARY KEY,
-    id_alumno INT NOT NULL REFERENCES alumnos(id_alumno),
-    id_modulo INT NOT NULL REFERENCES modulos(id_modulo),
-    fecha_inscripcion TIMESTAMP,
-    estado VARCHAR(20),
-    observaciones TEXT,
-    UNIQUE (id_alumno, id_modulo)
+CREATE TABLE historial_calibracion (
+    id_historial SERIAL PRIMARY KEY,
+    id_medidor INT REFERENCES medidor(id_medidor),
+    fecha_calibracion DATE,
+    resultado VARCHAR(255),
+    valores_calibracion VARCHAR(255),
+    observaciones VARCHAR(255),
+    tecnico_responsable VARCHAR(255)
 );
 
-CREATE TABLE notas (
-    id_nota SERIAL PRIMARY KEY,
-    id_inscripcion INT NOT NULL REFERENCES inscripciones(id_inscripcion),
-    id_profesor INT NOT NULL REFERENCES profesores(id_profesor),
-    valor DECIMAL(5,2) NOT NULL,
-    observacion TEXT,
-    fecha_registro TIMESTAMP
+CREATE TABLE historial_manipulacion (
+    id_historial_manipulacion SERIAL PRIMARY KEY,
+    id_cliente INT REFERENCES cliente(id_cliente),
+    id_medidor INT REFERENCES medidor(id_medidor),
+    fecha_deteccion DATE,
+    numero_incidencia INT,
+    observaciones VARCHAR(255)
 );
 
-CREATE TABLE usuarios (
-    id_usuario SERIAL PRIMARY KEY,
-    id_persona INT NOT NULL REFERENCES personas(id_persona),
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    rol VARCHAR(20) NOT NULL,
-    ultimo_acceso TIMESTAMP,
-    activo BOOLEAN
-);
+-- Insertando datos en la tabla cliente
+INSERT INTO cliente (nombre, apellido, direccion, telefono, email, nit) VALUES
+('Juan', 'Pérez', 'Calle 123', '789456123', 'juan.perez@example.com', '123456789'),
+('María', 'González', 'Avenida 456', '789456124', 'maria.gonzalez@example.com', '987654321');
 
--- Insertando datos de prueba
+-- Insertando datos en la tabla compra
+INSERT INTO compra (id_cliente, fecha_compra, total, estado) VALUES
+(1, '2025-03-01', 150.00, 'Pagado'),
+(2, '2025-03-02', 200.00, 'Pendiente');
 
-INSERT INTO idiomas (nombre, descripcion, activo) VALUES 
-('Inglés', 'Idioma inglés', TRUE),
-('Francés', 'Idioma francés', TRUE),
-('Alemán', 'Idioma alemán', TRUE);
+-- Insertando datos en la tabla factura
+INSERT INTO factura (id_compra, nro_factura, fecha_emision, monto_total, estado) VALUES
+(1, 'F001-0001', '2025-03-01', 150.00, 'Emitida'),
+(2, 'F001-0002', '2025-03-02', 200.00, 'Pendiente');
 
-INSERT INTO niveles (nombre, descripcion, activo) VALUES 
-('Básico', 'Nivel básico', TRUE),
-('Medio', 'Nivel medio', TRUE),
-('Avanzado', 'Nivel avanzado', TRUE);
+-- Insertando datos en la tabla tipo_medidor
+INSERT INTO tipo_medidor (nombre, descripcion) VALUES
+('Monofásico', 'Medidor de energía monofásico'),
+('Bifásico', 'Medidor de energía bifásico'),
+('Trifásico', 'Medidor de energía trifásico');
 
-INSERT INTO cursos (id_idioma, id_nivel, codigo, nombre, capacidad_minima, activo) VALUES 
-(1, 1, 'ENG101', 'Inglés Básico', 10, TRUE),
-(2, 2, 'FRN201', 'Francés Intermedio', 8, TRUE);
+-- Insertando datos en la tabla medidor
+INSERT INTO medidor (id_tipo_medidor, numero_serie, marca, modelo, estado, sistema_seguridad, fecha_fabricacion, fecha_calibracion, valores_calibracion) VALUES
+(1, 'A123456', 'Siemens', 'X100', 'Nuevo', TRUE, '2024-01-01', '2025-02-01', '0.99'),
+(2, 'B654321', 'ABB', 'Z200', 'Calibrado', FALSE, '2023-05-10', '2025-02-15', '0.98');
 
-INSERT INTO periodos (nombre, fecha_inicio, fecha_fin, estado) VALUES 
-('Periodo 2025-01', '2025-01-01', '2025-06-30', 'Activo');
+-- Insertando datos en la tabla precio
+INSERT INTO precio (id_tipo_medidor, sistema_seguridad, valor_usd, fecha_vigencia, estado) VALUES
+(1, TRUE, 120.00, '2025-01-01', 'Vigente'),
+(2, FALSE, 110.00, '2025-02-01', 'Vigente');
 
-INSERT INTO personas (nombre, apellido, tipo_documento, nro_documento, telefono, email, direccion, fecha_registro, activo) VALUES 
-('Juan', 'Pérez', 'DNI', '12345678', '555-1234', 'juan.perez@example.com', 'Calle 123', NOW(), TRUE),
-('Ana', 'López', 'DNI', '87654321', '555-5678', 'ana.lopez@example.com', 'Avenida 456', NOW(), TRUE);
+-- Insertando datos en la tabla servicio
+INSERT INTO servicio (nombre, descripcion, precio_usd, estado) VALUES
+('Revisión', 'Revisión general del medidor', 50.00, 'Disponible'),
+('Calibración', 'Calibración del medidor', 80.00, 'Disponible');
 
-INSERT INTO alumnos (id_persona, codigo_alumno, observaciones) VALUES 
-(1, 'A12345', 'Estudiante destacado');
+-- Insertando datos en la tabla detalle_compra
+INSERT INTO detalle_compra (id_compra, id_medidor, cantidad, precio_unitario, subtotal) VALUES
+(1, 1, 2, 120.00, 240.00),
+(2, 2, 1, 110.00, 110.00);
 
-INSERT INTO profesores (id_persona, especialidad, fecha_contratacion) VALUES 
-(2, 'Idiomas', '2024-12-01');
+-- Insertando datos en la tabla detalle_servicio
+INSERT INTO detalle_servicio (id_servicio, id_compra, id_medidor, precio, observaciones) VALUES
+(1, 1, 1, 50.00, 'Revisión inicial'),
+(2, 2, 2, 80.00, 'Calibración anual');
 
-INSERT INTO aulas (numero, capacidad, disponible) VALUES 
-('101', 20, TRUE);
+-- Insertando datos en la tabla importacion
+INSERT INTO importacion (nro_importacion, fecha_importacion, proveedor, costo_total, estado) VALUES
+('IMP-2025-001', '2025-01-10', 'Proveedor X', 5000.00, 'Completado');
 
-INSERT INTO horarios (dia_semana, hora_inicio, hora_fin) VALUES 
-('Lunes', '08:00', '10:00');
+-- Insertando datos en la tabla detalle_importacion
+INSERT INTO detalle_importacion (id_importacion, id_tipo_medidor, cantidad, precio_unitario, subtotal) VALUES
+(1, 1, 10, 100.00, 1000.00);
 
-INSERT INTO modulos (id_curso, id_periodo, id_profesor, id_aula, codigo_modulo, fecha_inicio, fecha_fin, capacidad_maxima, estado) VALUES 
-(1, 1, 1, 1, 'MOD001', '2025-01-10', '2025-06-20', 15, 'Abierto');
+-- Insertando datos en la tabla historial_calibracion
+INSERT INTO historial_calibracion (id_medidor, fecha_calibracion, resultado, valores_calibracion, observaciones, tecnico_responsable) VALUES
+(1, '2025-02-01', 'Aprobado', '0.99', 'Sin anomalías', 'Técnico A');
 
-INSERT INTO modulo_horario (id_modulo, id_horario) VALUES 
-(1, 1);
-
-INSERT INTO inscripciones (id_alumno, id_modulo, fecha_inscripcion, estado, observaciones) VALUES 
-(1, 1, NOW(), 'Inscrito', 'Pagado');
-
-INSERT INTO notas (id_inscripcion, id_profesor, valor, observacion, fecha_registro) VALUES 
-(1, 1, 85.50, 'Buen desempeño', NOW());
-
-INSERT INTO usuarios (id_persona, username, password, rol, ultimo_acceso, activo) VALUES 
-(1, 'jperez', 'hashedpassword', 'Estudiante', NOW(), TRUE);
+-- Insertando datos en la tabla historial_manipulacion
+INSERT INTO historial_manipulacion (id_cliente, id_medidor, fecha_deteccion, numero_incidencia, observaciones) VALUES
+(1, 2, '2025-03-01', 101, 'Posible manipulación detectada.');
