@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Pedido } from './pedidos.entity';
+import { CreatePedidoDto } from './crear-pedido.dto';
 
 @Injectable()
 export class PedidosService {
@@ -9,6 +10,11 @@ export class PedidosService {
     @InjectRepository(Pedido)
     private pedidosRepo: Repository<Pedido>,
   ) {}
+
+  async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
+    const pedido = this.pedidosRepo.create(createPedidoDto); // Crea la entidad con los datos recibidos
+    return this.pedidosRepo.save(pedido); // Guarda el pedido en la base de datos
+  }
 
   findAll(): Promise<Pedido[]> {
     return this.pedidosRepo.find({ relations: ['usuario'] }); // Incluye datos del mesero

@@ -1,6 +1,7 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { PedidosService } from './pedidos.service';
 import { Pedido } from './pedidos.entity';
+import { CreatePedidoDto } from './crear-pedido.dto';
 
 @Controller('pedidos')
 export class PedidosController {
@@ -14,5 +15,11 @@ export class PedidosController {
   @Get(':id')
   async getOne(@Param('id', ParseIntPipe) id: number): Promise<Pedido> {
     return this.pedidosService.findOne(id);
+  }
+
+  @Post()
+  async create(@Body() createPedidoDto: CreatePedidoDto): Promise<Pedido> {
+    console.log(createPedidoDto);
+    return this.pedidosService.create(createPedidoDto); // Crea el nuevo pedido usando el servicio
   }
 }

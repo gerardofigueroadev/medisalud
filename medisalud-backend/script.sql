@@ -64,7 +64,7 @@ CREATE TABLE notificaciones (
 INSERT INTO USUARIOS (username, password_hash, nombre, rol, ultimo_acceso, activo) VALUES
 ('mesero1', 'hash123', 'Juan Pérez', 'mesero', '2025-03-21 10:15:00', true),
 ('mesero2', 'hash456', 'Laura Gómez', 'mesero', '2025-03-21 09:45:00', true),
-('admin1', 'adminhash', 'Carlos Ruiz', 'admin', '2025-03-20 18:30:00', true),
+('admin', 'admin', 'Carlos Ruiz', 'admin', '2025-03-20 18:30:00', true),
 ('mesero3', 'hash789', 'Pedro Torres', 'mesero', '2025-03-21 11:00:00', true);
 
 -- PRODUCTOS
