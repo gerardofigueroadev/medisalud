@@ -3,25 +3,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { CompraController } from './compras/compra.controller';
-import { CompraService } from './compras/compra.service';
-import { Compra } from './compras/compra.entity';
-import { Cliente } from './compras/cliente.entity';
-import { Medidor } from './medidores/medidor.entity';
-import { TipoMedidor } from './medidores/tipo-medidor.entity';
-import { Precio } from './medidores/precio.entity';
-import { MedidorService } from './medidores/medidor.service';
-import { MedidorController } from './medidores/medidor.controller';
-import { Importacion } from './importaciones/importacion.entity';
-import { DetalleImportacion } from './importaciones/detalle-importacion.entity';
-import { ImportacionController } from './importaciones/importacion.controller';
-import { ImportacionService } from './importaciones/importacion.service';
+import { Producto } from './productos/producto.entity';
+import { ProductosController } from './productos/producto.controller';
+import { ProductosService } from './productos/producto.service';
 import { Factura } from './facturas/factura.entity';
-import { FacturaController } from './facturas/factura.controller';
-import { FacturaService } from './facturas/factura.service';
-import { DetalleCompra } from './compras/detalle-compra.entity';
-import { ClienteService } from './clientes/cliente.service';
-import { ClienteController } from './clientes/cliente.controller';
+import { FacturasController } from './facturas/factura.controller';
+import { FacturasService } from './facturas/factura.service';
+import { Pedido } from './pedidos/pedidos.entity';
+import { PedidosController } from './pedidos/pedidos.controller';
+import { PedidosService } from './pedidos/pedidos.service';
+import { Usuario } from './login/usuario.entity';
+import { AuthService } from './login/auth.service';
+import { AuthController } from './login/auth.controller';
+import { NotificacionesController } from './notificaciones/notification.controller';
+import { NotificacionesService } from './notificaciones/notification.service';
+import { Notificacion } from './notificaciones/notification.entity';
 
 @Module({
   imports: [
@@ -32,13 +28,13 @@ import { ClienteController } from './clientes/cliente.controller';
       port: 5432,
       username: 'postgres',
       password: '12345678',
-      database: 'inventario',
+      database: 'pedidos',
       autoLoadEntities: true,
       synchronize: false,
     }),
-    TypeOrmModule.forFeature([Compra, Cliente, Medidor, TipoMedidor, Precio, Importacion, DetalleImportacion, Factura, DetalleCompra])
+    TypeOrmModule.forFeature([Producto, Factura, Pedido, Usuario, Notificacion])
   ],
-  controllers: [AppController, CompraController, MedidorController, ImportacionController, FacturaController, ClienteController],
-  providers: [AppService, CompraService, MedidorService, ImportacionService, FacturaService, ClienteService],
+  controllers: [AppController, ProductosController, FacturasController, PedidosController, AuthController, NotificacionesController],
+  providers: [AppService, ProductosService, FacturasService, PedidosService, AuthService, NotificacionesService],
 })
 export class AppModule {}

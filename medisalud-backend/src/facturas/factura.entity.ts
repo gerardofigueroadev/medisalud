@@ -1,24 +1,37 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Compra } from 'src/compras/compra.entity';
+import { Pedido } from '../pedidos/pedidos.entity';
 
-@Entity('factura')
+@Entity('facturas')
 export class Factura {
   @PrimaryGeneratedColumn()
-  id_factura: number;
+  id: number;
 
-  @ManyToOne(() => Compra, (compra) => compra.facturas)
-  @JoinColumn({ name: 'id_compra' })
-  compra: Compra;
+  @Column()
+  pedido_id: number;
 
-  @Column({ length: 50 })
-  nro_factura: string;
+  @Column()
+  numero_factura: number;
 
-  @Column({ type: 'date' })
-  fecha_emision: string;
+  @Column({ type: 'timestamp' })
+  fecha_emision: Date;
 
-  @Column({ type: 'decimal' })
-  monto_total: number;
+  @Column('decimal', { precision: 10, scale: 2 })
+  subtotal: number;
 
-  @Column({ length: 20 })
-  estado: string;
+  @Column('decimal', { precision: 10, scale: 2 })
+  impuestos: number;
+
+  @Column('decimal', { precision: 10, scale: 2 })
+  total: number;
+
+  @Column()
+  metodo_pago: string;
+
+  @Column()
+  estado_pago: string;
+
+  // Relación con pedido (opcional, si quieres incluir el objeto completo)
+  @ManyToOne(() => Pedido)
+  @JoinColumn({ name: 'pedido_id' })
+  pedido: Pedido;
 }

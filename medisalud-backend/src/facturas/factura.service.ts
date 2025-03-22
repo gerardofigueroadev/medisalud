@@ -2,34 +2,25 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Factura } from './factura.entity';
-import { Compra } from 'src/compras/compra.entity';
-import { CreateFacturaDto } from './factura.dto';
 
 @Injectable()
-export class FacturaService {
+export class FacturasService {
   constructor(
     @InjectRepository(Factura)
-    private readonly facturaRepository: Repository<Factura>,
-
-    @InjectRepository(Compra)
-    private readonly compraRepository: Repository<Compra>,
+    private facturaRepo: Repository<Factura>,
   ) {}
 
-  async createFactura(dto: CreateFacturaDto): Promise<Factura> {
-    const compra = await this.compraRepository.findOne({ where: { id_compra: dto.id_compra } });
+  findAll(): Promise<Factura[]> {
+    return this.facturaRepo.find({ relations: ['pedido'] }); // Opcional si usas relación con pedido
+  }
 
-    if (!compra) {
-      throw new NotFoundException(`Compra con ID ${dto.id_compra} no encontrada.`);
+  async findOne(id: number): Promise<Factura> {
+    const factura = await this.facturaRepo.findOne({ where: { id }, relations: ['pedido'] });
+
+    if (!factura) {
+      throw new NotFoundException(`Factura con ID ${id} no encontrada`);
     }
 
-    const factura = this.facturaRepository.create({
-      compra,
-      nro_factura: dto.nro_factura,
-      fecha_emision: dto.fecha_emision,
-      monto_total: dto.monto_total,
-      estado: dto.estado,
-    });
-
-    return await this.facturaRepository.save(factura);
+    return factura;
   }
 }

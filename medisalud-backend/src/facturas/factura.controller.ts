@@ -1,14 +1,18 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { FacturaService } from './factura.service';
-import { CreateFacturaDto } from './factura.dto';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { FacturasService } from './factura.service';
 import { Factura } from './factura.entity';
 
 @Controller('facturas')
-export class FacturaController {
-  constructor(private readonly facturaService: FacturaService) {}
+export class FacturasController {
+  constructor(private readonly facturasService: FacturasService) {}
 
-  @Post()
-  async createFactura(@Body() dto: CreateFacturaDto): Promise<Factura> {
-    return this.facturaService.createFactura(dto);
+  @Get()
+  async getAll(): Promise<Factura[]> {
+    return this.facturasService.findAll();
+  }
+
+  @Get(':id')
+  async getOne(@Param('id', ParseIntPipe) id: number): Promise<Factura> {
+    return this.facturasService.findOne(id);
   }
 }

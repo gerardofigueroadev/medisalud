@@ -1,179 +1,108 @@
-CREATE TABLE cliente (
-    id_cliente SERIAL PRIMARY KEY,
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255),
+    password_hash VARCHAR(255),
     nombre VARCHAR(255),
-    apellido VARCHAR(255),
-    direccion VARCHAR(255),
-    telefono VARCHAR(50),
-    email VARCHAR(255),
-    nit VARCHAR(50)
+    rol VARCHAR(100),
+    ultimo_acceso TIMESTAMP,
+    activo BOOLEAN
 );
 
-CREATE TABLE compra (
-    id_compra SERIAL PRIMARY KEY,
-    id_cliente INT REFERENCES cliente(id_cliente),
-    fecha_compra DATE,
-    total DECIMAL(10,2),
-    estado VARCHAR(50)
+CREATE TABLE productos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(255),
+    precio DECIMAL(10, 2),
+    descripcion TEXT,
+    disponible BOOLEAN,
+    categoria VARCHAR(100)
 );
 
-CREATE TABLE factura (
-    id_factura SERIAL PRIMARY KEY,
-    id_compra INT UNIQUE REFERENCES compra(id_compra),
-    nro_factura VARCHAR(50),
-    fecha_emision DATE,
-    monto_total DECIMAL(10,2),
-    estado VARCHAR(50)
+CREATE TABLE pedidos (
+    id SERIAL PRIMARY KEY,
+    numero_pedido INT,
+    fecha_hora TIMESTAMP,
+    estado VARCHAR(100),
+    para_llevar BOOLEAN,
+    total DECIMAL(10, 2),
+    mesa_numero INT,
+    usuario_id INT REFERENCES USUARIOS(id)
 );
 
-CREATE TABLE tipo_medidor (
-    id_tipo_medidor SERIAL PRIMARY KEY,
-    nombre VARCHAR(50),
-    descripcion VARCHAR(255)
-);
-
-CREATE TABLE medidor (
-    id_medidor SERIAL PRIMARY KEY,
-    id_tipo_medidor INT REFERENCES tipo_medidor(id_tipo_medidor),
-    numero_serie VARCHAR(50),
-    marca VARCHAR(50),
-    modelo VARCHAR(50),
-    estado VARCHAR(50),
-    sistema_seguridad BOOLEAN,
-    fecha_fabricacion DATE,
-    fecha_calibracion DATE,
-    valores_calibracion VARCHAR(255)
-);
-
-CREATE TABLE detalle_compra (
-    id_detalle_compra SERIAL PRIMARY KEY,
-    id_compra INT REFERENCES compra(id_compra),
-    id_medidor INT REFERENCES medidor(id_medidor),
+CREATE TABLE detalle_pedido (
+    id SERIAL PRIMARY KEY,
+    pedido_id INT REFERENCES PEDIDOS(id),
+    producto_id INT REFERENCES PRODUCTOS(id),
     cantidad INT,
-    precio_unitario DECIMAL(10,2),
-    subtotal DECIMAL(10,2)
+    precio_unitario DECIMAL(10, 2),
+    subtotal DECIMAL(10, 2),
+    comentarios VARCHAR(255)
 );
 
-CREATE TABLE precio (
-    id_precio SERIAL PRIMARY KEY,
-    id_tipo_medidor INT REFERENCES tipo_medidor(id_tipo_medidor),
-    sistema_seguridad BOOLEAN,
-    valor_usd DECIMAL(10,2),
-    fecha_vigencia DATE,
-    estado VARCHAR(50)
+CREATE TABLE facturas (
+    id SERIAL PRIMARY KEY,
+    pedido_id INT REFERENCES PEDIDOS(id),
+    numero_factura INT,
+    fecha_emision TIMESTAMP,
+    subtotal DECIMAL(10, 2),
+    impuestos DECIMAL(10, 2),
+    total DECIMAL(10, 2),
+    metodo_pago VARCHAR(100),
+    estado_pago VARCHAR(100)
 );
 
-CREATE TABLE servicio (
-    id_servicio SERIAL PRIMARY KEY,
-    nombre VARCHAR(50),
-    descripcion VARCHAR(255),
-    precio_usd DECIMAL(10,2),
-    estado VARCHAR(50)
+CREATE TABLE notificaciones (
+    id SERIAL PRIMARY KEY,
+    tipo VARCHAR(100),
+    mensaje VARCHAR(255),
+    fecha_hora TIMESTAMP,
+    leida BOOLEAN,
+    destinatario_id INT REFERENCES USUARIOS(id),
+    pedido_id INT REFERENCES PEDIDOS(id)
 );
 
-CREATE TABLE detalle_servicio (
-    id_detalle_servicio SERIAL PRIMARY KEY,
-    id_servicio INT REFERENCES servicio(id_servicio),
-    id_compra INT REFERENCES compra(id_compra),
-    id_medidor INT REFERENCES medidor(id_medidor),
-    precio DECIMAL(10,2),
-    observaciones VARCHAR(255)
-);
+-- USUARIOS
+INSERT INTO USUARIOS (username, password_hash, nombre, rol, ultimo_acceso, activo) VALUES
+('mesero1', 'hash123', 'Juan Pérez', 'mesero', '2025-03-21 10:15:00', true),
+('mesero2', 'hash456', 'Laura Gómez', 'mesero', '2025-03-21 09:45:00', true),
+('admin1', 'adminhash', 'Carlos Ruiz', 'admin', '2025-03-20 18:30:00', true),
+('mesero3', 'hash789', 'Pedro Torres', 'mesero', '2025-03-21 11:00:00', true);
 
-CREATE TABLE importacion (
-    id_importacion SERIAL PRIMARY KEY,
-    nro_importacion VARCHAR(50),
-    fecha_importacion DATE,
-    proveedor VARCHAR(255),
-    costo_total DECIMAL(10,2),
-    estado VARCHAR(50)
-);
+-- PRODUCTOS
+INSERT INTO PRODUCTOS (nombre, precio, descripcion, disponible, categoria) VALUES
+('Hamburguesa Clásica', 25.50, 'Carne, lechuga, tomate, pan artesanal', true, 'Comida'),
+('Papas Fritas', 10.00, 'Porción mediana de papas fritas crujientes', true, 'Acompañamiento'),
+('Gaseosa 500ml', 8.00, 'Bebida con gas', true, 'Bebidas'),
+('Pizza Personal', 30.00, 'Pizza de queso mozzarella y salsa de tomate', true, 'Comida');
 
-CREATE TABLE detalle_importacion (
-    id_detalle_importacion SERIAL PRIMARY KEY,
-    id_importacion INT REFERENCES importacion(id_importacion),
-    id_tipo_medidor INT REFERENCES tipo_medidor(id_tipo_medidor),
-    cantidad INT,
-    precio_unitario DECIMAL(10,2),
-    subtotal DECIMAL(10,2)
-);
+-- PEDIDOS
+INSERT INTO PEDIDOS (numero_pedido, fecha_hora, estado, para_llevar, total, mesa_numero, usuario_id) VALUES
+(1001, '2025-03-21 12:10:00', 'entregado', false, 43.50, 5, 1),
+(1002, '2025-03-21 12:30:00', 'preparando', false, 40.00, 3, 2),
+(1003, '2025-03-21 13:00:00', 'pendiente', true, 33.50, null, 1),
+(1004, '2025-03-21 13:15:00', 'entregado', false, 38.00, 2, 4);
 
-CREATE TABLE historial_calibracion (
-    id_historial SERIAL PRIMARY KEY,
-    id_medidor INT REFERENCES medidor(id_medidor),
-    fecha_calibracion DATE,
-    resultado VARCHAR(255),
-    valores_calibracion VARCHAR(255),
-    observaciones VARCHAR(255),
-    tecnico_responsable VARCHAR(255)
-);
+-- DETALLE_PEDIDO
+INSERT INTO DETALLE_PEDIDO (pedido_id, producto_id, cantidad, precio_unitario, subtotal, comentarios) VALUES
+(1, 1, 1, 25.50, 25.50, 'Sin cebolla'),
+(1, 2, 1, 10.00, 10.00, ''),
+(1, 3, 1, 8.00, 8.00, 'Con hielo'),
+(2, 4, 1, 30.00, 30.00, ''),
+(2, 3, 1, 8.00, 8.00, ''),
+(3, 1, 1, 25.50, 25.50, 'Extra tomate'),
+(3, 3, 1, 8.00, 8.00, ''),
+(4, 4, 1, 30.00, 30.00, ''),
+(4, 2, 1, 8.00, 8.00, '');
 
-CREATE TABLE historial_manipulacion (
-    id_historial_manipulacion SERIAL PRIMARY KEY,
-    id_cliente INT REFERENCES cliente(id_cliente),
-    id_medidor INT REFERENCES medidor(id_medidor),
-    fecha_deteccion DATE,
-    numero_incidencia INT,
-    observaciones VARCHAR(255)
-);
+-- FACTURAS
+INSERT INTO FACTURAS (pedido_id, numero_factura, fecha_emision, subtotal, impuestos, total, metodo_pago, estado_pago) VALUES
+(1, 5001, '2025-03-21 12:15:00', 43.50, 5.22, 48.72, 'Efectivo', 'Pagado'),
+(2, 5002, '2025-03-21 12:40:00', 38.00, 4.56, 42.56, 'Tarjeta', 'Pagado'),
+(3, 5003, '2025-03-21 13:05:00', 33.50, 4.02, 37.52, 'QR', 'Pendiente'),
+(4, 5004, '2025-03-21 13:20:00', 38.00, 4.56, 42.56, 'Efectivo', 'Pagado');
 
--- Insertando datos en la tabla cliente
-INSERT INTO cliente (nombre, apellido, direccion, telefono, email, nit) VALUES
-('Juan', 'Pérez', 'Calle 123', '789456123', 'juan.perez@example.com', '123456789'),
-('María', 'González', 'Avenida 456', '789456124', 'maria.gonzalez@example.com', '987654321');
-
--- Insertando datos en la tabla compra
-INSERT INTO compra (id_cliente, fecha_compra, total, estado) VALUES
-(1, '2025-03-01', 150.00, 'Pagado'),
-(2, '2025-03-02', 200.00, 'Pendiente');
-
--- Insertando datos en la tabla factura
-INSERT INTO factura (id_compra, nro_factura, fecha_emision, monto_total, estado) VALUES
-(1, 'F001-0001', '2025-03-01', 150.00, 'Emitida'),
-(2, 'F001-0002', '2025-03-02', 200.00, 'Pendiente');
-
--- Insertando datos en la tabla tipo_medidor
-INSERT INTO tipo_medidor (nombre, descripcion) VALUES
-('Monofásico', 'Medidor de energía monofásico'),
-('Bifásico', 'Medidor de energía bifásico'),
-('Trifásico', 'Medidor de energía trifásico');
-
--- Insertando datos en la tabla medidor
-INSERT INTO medidor (id_tipo_medidor, numero_serie, marca, modelo, estado, sistema_seguridad, fecha_fabricacion, fecha_calibracion, valores_calibracion) VALUES
-(1, 'A123456', 'Siemens', 'X100', 'Nuevo', TRUE, '2024-01-01', '2025-02-01', '0.99'),
-(2, 'B654321', 'ABB', 'Z200', 'Calibrado', FALSE, '2023-05-10', '2025-02-15', '0.98');
-
--- Insertando datos en la tabla precio
-INSERT INTO precio (id_tipo_medidor, sistema_seguridad, valor_usd, fecha_vigencia, estado) VALUES
-(1, TRUE, 120.00, '2025-01-01', 'Vigente'),
-(2, FALSE, 110.00, '2025-02-01', 'Vigente');
-
--- Insertando datos en la tabla servicio
-INSERT INTO servicio (nombre, descripcion, precio_usd, estado) VALUES
-('Revisión', 'Revisión general del medidor', 50.00, 'Disponible'),
-('Calibración', 'Calibración del medidor', 80.00, 'Disponible');
-
--- Insertando datos en la tabla detalle_compra
-INSERT INTO detalle_compra (id_compra, id_medidor, cantidad, precio_unitario, subtotal) VALUES
-(1, 1, 2, 120.00, 240.00),
-(2, 2, 1, 110.00, 110.00);
-
--- Insertando datos en la tabla detalle_servicio
-INSERT INTO detalle_servicio (id_servicio, id_compra, id_medidor, precio, observaciones) VALUES
-(1, 1, 1, 50.00, 'Revisión inicial'),
-(2, 2, 2, 80.00, 'Calibración anual');
-
--- Insertando datos en la tabla importacion
-INSERT INTO importacion (nro_importacion, fecha_importacion, proveedor, costo_total, estado) VALUES
-('IMP-2025-001', '2025-01-10', 'Proveedor X', 5000.00, 'Completado');
-
--- Insertando datos en la tabla detalle_importacion
-INSERT INTO detalle_importacion (id_importacion, id_tipo_medidor, cantidad, precio_unitario, subtotal) VALUES
-(1, 1, 10, 100.00, 1000.00);
-
--- Insertando datos en la tabla historial_calibracion
-INSERT INTO historial_calibracion (id_medidor, fecha_calibracion, resultado, valores_calibracion, observaciones, tecnico_responsable) VALUES
-(1, '2025-02-01', 'Aprobado', '0.99', 'Sin anomalías', 'Técnico A');
-
--- Insertando datos en la tabla historial_manipulacion
-INSERT INTO historial_manipulacion (id_cliente, id_medidor, fecha_deteccion, numero_incidencia, observaciones) VALUES
-(1, 2, '2025-03-01', 101, 'Posible manipulación detectada.');
+-- NOTIFICACIONES
+INSERT INTO NOTIFICACIONES (tipo, mensaje, fecha_hora, leida, destinatario_id, pedido_id) VALUES
+('nuevo_pedido', 'Nuevo pedido en mesa 5', '2025-03-21 12:11:00', false, 1, 1),
+('actualizacion', 'Pedido 1002 está en preparación', '2025-03-21 12:35:00', false, 2, 2),
+('entregado', 'Pedido 1001 fue entregado', '2025-03-21 12:20:00', true, 1, 1),
+('nuevo_pedido', 'Pedido para llevar registrado', '2025-03-21 13:01:00', false, 1, 3);
