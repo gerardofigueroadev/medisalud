@@ -20,8 +20,8 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "username": "admin1",
-  "password": "adminhash"
+  "username": "admin",
+  "password": "admins"
 }
 
 ### Obtener Lista de notificationes
@@ -32,11 +32,11 @@ POST http://localhost:3000/pedidos
 Content-Type: application/json
 
 {
-  "numero_pedido": 1004,
+  "numero_pedido": 872904,
   "fecha_hora": "2025-03-21T17:15:00.000Z",
   "estado": "entregado",
   "para_llevar": false,
   "total": 38.00,
   "mesa_numero": 2,
-  "usuario_id": 4
+  "usuario_id": 9
 }
